@@ -1,0 +1,5 @@
+Arreglar:
+- agregar valores de la señal alu-op
+- anotar que opcodes no se usan
+- detalle de LOAD y STORE explicar que dos opcode corresponden a la misma instruccion
+
