@@ -100,28 +100,23 @@
     PC_load                         MM_enOut                       ; PC <- [Rx]
     reset_microOp
     
-01110: ; ADDINMEM Rx (Opcode 0x0E)
-    RB_selectIndexOut=0 RB_enOut MM_enAddr 
-    ALU_enA MM_enOut
-    ALU_enB ALU_OP=cte0x01 ALU_enOut ; consigo el valor de memoria siguiente al del registro
-    ALU_OP=ADD ALU_opW
-    ALU_enOut MM_enAddr
-    MM_enOut ALU_enB ; Tengo en el B de la ALU la memoria siguiente
-    RB_enOut RB_selectIndexOut=0 MM_enAddr
-    ALU_enA MM_enOut
-    ALU_OP=ADD ALU_opW  
-    MM_enAddr MM_load ALU_enOut
+01110: ; ADDINMEM Rx
+    ALU_enA                       RB_enOut RB_selectIndexOut=0 ; A <- Rx
+    ALU_enB                       ALU_OP=cte0x01 ALU_enOut     ; B <- 1
+    ALU_OP=ADD                    ALU_enOut MM_enAddr          ; addr <- Rx + 1
+    ALU_enB                       MM_enOut                     ; B <- [[Rx] + 1]
+    MM_enAddr                     RB_enOut RB_selectIndexOut=0 ; addr <- Rx
+    ALU_enA                       MM_enOut                     ; A <- [Rx]
+    ALU_OP=ADD                    ALU_opW                      ; A + B
+    MM_load                       ALU_enOut                    ; addr <- A + B
     reset_microOp
 
 
-01111: ; ADDE10S R1, R2
-    ; meto Rx, le resto 10, meto la suma en la memoria.
-    ; lo mismo con Ry. Muevo los dos numeros a la ALU, hago la suma y meto el 
-    ; resultado en la dirección de memoria del Rx
-
-    RB_selectIndexOut=0 RB_enOut MM_enAddr
-    cte0x01
-    RB_selectIndexOut=1 RB_enOut ___
+01111: ; ADDE10S Rx, Ry
+    ALU_enA                       RB_enOut RB_selectIndexOut=0 ; A <- Rx
+    ALU_enB                       RB_enOut RB_selectIndexOut=1 ; A <- Ry
+    ALU_OP=ADDE10S                ALU_opW                      ; ADDE10S Rx, Ry
+    RB_enIn                       RB_selectIndexIn=0 ALU_enOut ; Rx <- ADDE10S Rx, Ry
     reset_microOp
     
 10000: ; STR [M] <- Rx
